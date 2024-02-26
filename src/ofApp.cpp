@@ -227,6 +227,7 @@ void ofApp::keyPressed(int key){
 	//As long as we're not in Idle OR the gameState is GameOver;
 	//AND we press the SPACEBAR, we will reset the game
 	if((!idle || gameState == GameOver) && tolower(key) == ' '){
+		newGameModeActivated = false;
 		GameReset();
 	}
 }
@@ -250,13 +251,48 @@ void ofApp::mouseDragged(int x, int y, int button){
 void ofApp::mousePressed(int x, int y, int button){
 	//If we're not in Idle and the gameState equals PlayerInput,
 	//We will pay attention to the mousePresses from the user
-	if(!idle && gameState == PlayerInput){
-		//We mark the pressed button as "pressed"
+	if(gameState == StartUp){
+        RedButton->setPressed(x,y);
+        if(RedButton->wasPressed()){
+            newGameModeActivated = !newGameModeActivated;
+			gameState = PlayerInput;
+        }
+    }
+
+	 if(!idle && gameState == PlayerInput && newGameModeActivated){
+		//We mark the prebbssed button as "pressed"
+
 		RedButton->setPressed(x,y);
 		BlueButton->setPressed(x,y);
 		YellowButton->setPressed(x,y);
 		GreenButton->setPressed(x,y);
+		
+		//We check which button got pressed
+		if(RedButton->wasPressed()){
+			color = RED;
+		}
+		else if(BlueButton->wasPressed()){
+			color = BLUE;
+		}
+		else if(YellowButton->wasPressed()){
+			color = YELLOW;
+		}
+		else if(GreenButton->wasPressed()){
+			color = GREEN;
+		}
+		//Light up the pressed button for a few ticks
+		lightOn(color);
+		lightDisplayDuration = 15;
+	 }
 
+	if(!idle && gameState == PlayerInput && !newGameModeActivated){
+		//We mark the pressed button as "pressed"
+
+		RedButton->setPressed(x,y);
+		BlueButton->setPressed(x,y);
+		YellowButton->setPressed(x,y);
+		GreenButton->setPressed(x,y);
+		
 		//We check which button got pressed
 		if(RedButton->wasPressed()){
 			color = RED;
@@ -284,7 +320,6 @@ void ofApp::mousePressed(int x, int y, int button){
 			}
 	}
 }
-
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
 
