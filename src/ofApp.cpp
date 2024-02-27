@@ -229,6 +229,9 @@ void ofApp::keyPressed(int key){
 	if((!idle || gameState == GameOver) && tolower(key) == ' '){
 		newGameModeActivated = false;
 		GameReset();
+	}	
+	if ( gameState == PlayerInput && key == OF_KEY_BACKSPACE){
+		gameState = StartUp;
 	}
 }
 
