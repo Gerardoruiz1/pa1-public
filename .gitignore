@@ -3,3 +3,5 @@ obj/
 # Ignore all .exe and .dll files
 *.exe
 *.dll
+
+bin/pa1-gerardo-victoria.app/**
