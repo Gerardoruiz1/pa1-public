@@ -213,9 +213,11 @@ void ofApp::lightOn(Buttons color){
 	//true for the button that matches the color, and also play the button sound
 	if(color == RED){
 		RedButton->toggleLightOn();
+        RedButton->playSound();
 	}
 	else if(color == BLUE){
 		BlueButton->toggleLightOn();
+        BlueButton->playSound();
 	}
 	else if(color == YELLOW){
 		YellowButton->toggleLightOn();
@@ -223,6 +225,7 @@ void ofApp::lightOn(Buttons color){
 	}
 	else if(color == GREEN){
 		GreenButton->toggleLightOn();
+        GreenButton->playSound();
 	}
 }
 
