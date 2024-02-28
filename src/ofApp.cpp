@@ -44,7 +44,7 @@ void ofApp::update(){
 		//that means the user has successfully completed the whole
 		//sequence and we can proceed with the next level
 		if(userIndex == sequenceLimit){
-			if(!newGameModeActivated){
+			if(!ComputerGameModeActivated){
 				generateSequence();
 			}
 			userIndex = 0;
@@ -78,7 +78,7 @@ void ofApp::draw(){
 	YellowButton->render();
 	GreenButton->render();
 
-	if(newGameModeActivated){
+	if(ComputerGameModeActivated){
 		ofSetColor(255);
 		ofDrawCircle(100, 100, 33);
 		if(gameState == PlayerInput){
@@ -162,7 +162,7 @@ void ofApp::GameReset(){
 	lightOff(GREEN);
 	userIndex = 0;
 	Sequence.clear();
-	if(newGameModeActivated){
+	if(ComputerGameModeActivated){
 		// Record mode
 		gameState = PlayerInput;
 	}else{
@@ -251,12 +251,14 @@ void ofApp::keyPressed(int key){
 	//As long as we're not in Idle OR the gameState is GameOver;
 	//AND we press the SPACEBAR, we will reset the game
 	if((!idle || gameState == GameOver) && tolower(key) == ' '){
-		newGameModeActivated = false;
+		ComputerGameModeActivated = false;
+		MultiplayerGameMode = false;
 		GameReset();
 	} else if(gameState == PlayerInput && key == OF_KEY_BACKSPACE){
-		newGameModeActivated = false;
+		ComputerGameModeActivated = false;
+		MultiplayerGameMode = false;
 		gameState = StartUp;
-	} else if(newGameModeActivated && tolower(key) == 'r'){
+	} else if(ComputerGameModeActivated && tolower(key) == 'r'){
 		gameState = PlayingSequence;
 		showingSequenceDuration = 0;
 		userIndex = 0;
@@ -278,19 +280,32 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 }
 
+void offApp::GameModeComputerRed(){
+	
+}
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
 	//If we're not in Idle and the gameState equals PlayerInput,
 	//We will pay attention to the mousePresses from the user
+
+	
 	if(gameState == StartUp){
         RedButton->setPressed(x,y);
         if(RedButton->wasPressed()){
-            newGameModeActivated = true;
+            ComputerGameModeActivated = true;
 			gameState = PlayerInput;
         }
     }
 
-	if(!idle && gameState == PlayerInput && newGameModeActivated){
+	else if(gameState == StartUp){
+        BlueButton->setPressed(x,y);
+        if(BlueButton->wasPressed()){
+            MultiplayerGameMode = true;
+			gameState = PlayerInput;
+        }
+    }
+
+	if(!idle && gameState == PlayerInput && ComputerGameModeActivated){
 		// New game mode!
 
 		//We mark the prebbssed button as "pressed"
@@ -320,7 +335,7 @@ void ofApp::mousePressed(int x, int y, int button){
 		sequenceLimit = Sequence.size();
 	}
 
-	if(!idle && gameState == PlayerInput && !newGameModeActivated){
+	if(!idle && gameState == PlayerInput && !ComputerGameModeActivated){
 		// Normal game mode
 
 		//We mark the pressed button as "pressed"
@@ -355,6 +370,45 @@ void ofApp::mousePressed(int x, int y, int button){
 			gameState = GameOver;
 		}
 	}
+
+	if(!idle && gameState == PlayerInput && MultiplayerGameMode){
+		// Normal game mode
+		Player1 = Sequence1 create
+		Player2 = Sequence1 create
+		//We mark the pressed button as "pressed"
+		RedButton->setPressed(x,y);
+		BlueButton->setPressed(x,y);
+		YellowButton->setPressed(x,y);
+		GreenButton->setPressed(x,y);
+		
+		//We check which button got pressed
+		if(RedButton->wasPressed()){
+			color = RED;
+		}
+		else if(BlueButton->wasPressed()){
+			color = BLUE;
+		}
+		else if(YellowButton->wasPressed()){
+			color = YELLOW;
+		}
+		else if(GreenButton->wasPressed()){
+			color = GREEN;
+		}
+		//Light up the pressed button for a few ticks
+		lightOn(color);
+		lightDisplayDuration = 15;
+		
+		//If the user input is correct, we can continue checking
+		if(checkUserInput(color)){
+			userIndex++;
+		}else{
+			//If not, then we will terminate the game by 
+			//putting it in the GameOver state.
+			gameState = GameOver;
+		}
+	}
+
+
 }
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){

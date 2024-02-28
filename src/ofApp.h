@@ -72,7 +72,8 @@ class ofApp : public ofBaseApp{
 		bool logoIsReady = false;
 		int logoCounter = 0;
 		bool idle = true;
-		bool newGameModeActivated = false;
+		bool ComputerGameModeActivated = false;
+		bool MultiplayerGameMode = false;
 
 		
 };
