@@ -34,6 +34,7 @@ class ofApp : public ofBaseApp{
 		void lightOn(Buttons color);
 		void lightOff(Buttons color);
 		void generateSequence();
+		void generateSequenceForPlayer(int player);
 		bool checkUserInput(Buttons c);
 		void GameReset();
 		void startUpSequence(int count);
@@ -73,7 +74,11 @@ class ofApp : public ofBaseApp{
 		int logoCounter = 0;
 		bool idle = true;
 		bool ComputerGameModeActivated = false;
+		
 		bool MultiplayerGameMode = false;
+		std::vector<Buttons> player1Sequence;
+		std::vector<Buttons> player2Sequence;
+		int currentPlayer = 1;
 
 		
 };
