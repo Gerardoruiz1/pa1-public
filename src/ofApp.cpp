@@ -39,7 +39,7 @@ void ofApp::update(){
 		BlueButton->tick();
 		YellowButton->tick();
 		GreenButton->tick();
-
+		
 		//If the amount of user input equals the sequence limit
 		//that means the user has successfully completed the whole
 		//sequence and we can proceed with the next level
@@ -52,6 +52,17 @@ void ofApp::update(){
 			gameState = PlayingSequence;
 		}
 	}
+	 if(gameState == PlayingSequence){
+        if(currentPlayer == 1 && userIndex >= player1Sequence.size()){
+            currentPlayer = 2;
+            userIndex = 0;
+        } else if(currentPlayer == 2 && userIndex >= player2Sequence.size()){
+            currentPlayer = 1;
+            generateSequenceForPlayer(1);
+            generateSequenceForPlayer(2);
+            userIndex = 0;
+        }
+    }
 
 	//This will take care of turning on the lights after a few
 	//ticks so that they dont stay turned on forever or too long
@@ -173,6 +184,16 @@ void ofApp::GameReset(){
 	showingSequenceDuration = 0;
 }
 
+void ofApp::generateSequenceForPlayer(int currentPlayer){
+    int random = ofRandom(4);
+    Buttons newButton = static_cast<Buttons>(random);
+    if(currentPlayer == 1){
+        player1Sequence.push_back(newButton);
+    } else {
+        player2Sequence.push_back(newButton);
+    }
+}
+
 //--------------------------------------------------------------
 void ofApp::generateSequence(){
 
@@ -277,11 +298,6 @@ void ofApp::mouseMoved(int mouseX, int mouseY ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
-}
-
-void offApp::GameModeComputerRed(){
-	
 }
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
@@ -297,15 +313,14 @@ void ofApp::mousePressed(int x, int y, int button){
         }
     }
 
-	else if(gameState == StartUp){
+	if(gameState == StartUp){
         BlueButton->setPressed(x,y);
         if(BlueButton->wasPressed()){
             MultiplayerGameMode = true;
 			gameState = PlayerInput;
         }
     }
-
-	if(!idle && gameState == PlayerInput && ComputerGameModeActivated){
+		if(!idle && gameState == PlayerInput && MultiplayerGameMode){
 		// New game mode!
 
 		//We mark the prebbssed button as "pressed"
@@ -335,10 +350,11 @@ void ofApp::mousePressed(int x, int y, int button){
 		sequenceLimit = Sequence.size();
 	}
 
-	if(!idle && gameState == PlayerInput && !ComputerGameModeActivated){
-		// Normal game mode
 
-		//We mark the pressed button as "pressed"
+	if(!idle && gameState == PlayerInput && ComputerGameModeActivated){
+		// New game mode!
+
+		//We mark the prebbssed button as "pressed"
 		RedButton->setPressed(x,y);
 		BlueButton->setPressed(x,y);
 		YellowButton->setPressed(x,y);
@@ -360,21 +376,13 @@ void ofApp::mousePressed(int x, int y, int button){
 		//Light up the pressed button for a few ticks
 		lightOn(color);
 		lightDisplayDuration = 15;
-		
-		//If the user input is correct, we can continue checking
-		if(checkUserInput(color)){
-			userIndex++;
-		}else{
-			//If not, then we will terminate the game by 
-			//putting it in the GameOver state.
-			gameState = GameOver;
-		}
+		Sequence.push_back(color);
+		sequenceLimit = Sequence.size();
 	}
 
-	if(!idle && gameState == PlayerInput && MultiplayerGameMode){
+	if(!idle && gameState == PlayerInput && !ComputerGameModeActivated && !MultiplayerGameMode){
 		// Normal game mode
-		Player1 = Sequence1 create
-		Player2 = Sequence1 create
+
 		//We mark the pressed button as "pressed"
 		RedButton->setPressed(x,y);
 		BlueButton->setPressed(x,y);
