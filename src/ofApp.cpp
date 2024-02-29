@@ -52,16 +52,7 @@ void ofApp::update(){
 			gameState = PlayingSequence;
 		}
 	}
-	 if(gameState == PlayingSequence){
-        if(currentPlayer == 1 && userIndex >= player1Sequence.size()){
-            currentPlayer = 2;
-            userIndex = 0;
-        } else if(currentPlayer == 2 && userIndex >= player2Sequence.size()){
-            currentPlayer = 1;
-            generateSequenceForPlayer(1);
-            generateSequenceForPlayer(2);
-            userIndex = 0;
-        }
+
     }
 
 	//This will take care of turning on the lights after a few
@@ -173,10 +164,18 @@ void ofApp::GameReset(){
 	lightOff(GREEN);
 	userIndex = 0;
 	Sequence.clear();
+	player1Sequence.clear();
+    player2Sequence.clear();
+	currentPlayer = 1;
 	if(ComputerGameModeActivated){
 		// Record mode
 		gameState = PlayerInput;
-	}else{
+	}if (MultiplayerGameMode){
+		generateSequenceForPlayer(1);
+   		generateSequenceForPlayer(2);
+		gameState = PlayingSequence;
+	}
+	else{
 		// Normal game mode
 		generateSequence();
 		gameState = PlayingSequence;
@@ -228,6 +227,18 @@ bool ofApp::checkUserInput(Buttons input){
 		return false;
 	}
 }
+
+bool ofApp::checkMultyInput(Buttons input){
+	if ((player1Sequence[userIndex] == input)||(player2Sequence[userIndex] == input)){
+		return true;
+	}else{
+		return false;
+	}
+	//This function will varify if the user input matches the color
+	//of the sequence at the current index
+}
+
+
 //--------------------------------------------------------------
 void ofApp::lightOn(Buttons color){
 	//This function will take care of toggling the "isLightUp" variable to
@@ -317,7 +328,7 @@ void ofApp::mousePressed(int x, int y, int button){
         BlueButton->setPressed(x,y);
         if(BlueButton->wasPressed()){
             MultiplayerGameMode = true;
-			gameState = PlayerInput;
+			gameState = PlayingSequence;
         }
     }
 		if(!idle && gameState == PlayerInput && MultiplayerGameMode){
@@ -345,9 +356,36 @@ void ofApp::mousePressed(int x, int y, int button){
 		//Light up the pressed button for a few ticks
 		lightOn(color);
 		lightDisplayDuration = 15;
-
-		Sequence.push_back(color);
-		sequenceLimit = Sequence.size();
+		if(gameState == PlayingSequence){
+        if(currentPlayer == 1 && userIndex >= player1Sequence.size()){
+            currentPlayer = 2;
+            userIndex = 0;
+        } else if(currentPlayer == 2 && userIndex >= player2Sequence.size()){
+            currentPlayer = 1;
+            generateSequenceForPlayer(1);
+            generateSequenceForPlayer(2);
+            userIndex = 0;
+        }
+		if(currentPlayer == 1){
+            if(!checkMultyInput(color)){ // entiendo que aqui esta el problema
+                gameState = GameOver;
+            }
+        } else {
+            if(!checkMultyInput(color)){
+                gameState = GameOver;
+            }
+        }
+		
+		 userIndex++;
+        if(currentPlayer == 1 && userIndex >= player1Sequence.size()){
+            currentPlayer = 2;
+            userIndex = 0;
+        } else if(currentPlayer == 2 && userIndex >= player2Sequence.size()){
+            currentPlayer = 1;
+            userIndex = 0;
+            gameState = PlayingSequence; // Start next round
+        }
+		
 	}
 
 
@@ -416,6 +454,7 @@ void ofApp::mousePressed(int x, int y, int button){
 		}
 	}
 
+		}
 
 }
 //--------------------------------------------------------------
