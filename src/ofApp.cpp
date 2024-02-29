@@ -43,7 +43,7 @@ void ofApp::update(){
 		//If the amount of user input equals the sequence limit
 		//that means the user has successfully completed the whole
 		//sequence and we can proceed with the next level
-		if(userIndex == sequenceLimit){
+		if(userIndex == sequenceLimit && !newGameModeActivated){
 			if(!newGameModeActivated){
 				generateSequence();
 			}
@@ -110,7 +110,12 @@ void ofApp::draw(){
 		if(userIndex == sequenceLimit){
 			lightOff(color);
 			userIndex = 0;
-			gameState = PlayerInput;
+			if(newGameModeActivated){
+				gameState = PressRecord;
+				Sequence.clear();
+			} else {
+				gameState = PlayerInput;
+			}
 		}
 	}
 
@@ -155,16 +160,19 @@ void ofApp::draw(){
 }
 //--------------------------------------------------------------
 void ofApp::GameReset(){
+
 	//This function will reset the game to its initial state
 	lightOff(RED);
 	lightOff(BLUE);
 	lightOff(YELLOW);
 	lightOff(GREEN);
 	userIndex = 0;
+	showingSequenceDuration = 0;
 	Sequence.clear();
 	if(newGameModeActivated){
 		// Record mode
 		gameState = PlayerInput;
+		// TODO: implement that if counter == 2 stop recording or use a boolean
 	}else{
 		// Normal game mode
 		generateSequence();
@@ -253,13 +261,20 @@ void ofApp::keyPressed(int key){
 	if((!idle || gameState == GameOver) && tolower(key) == ' '){
 		newGameModeActivated = false;
 		GameReset();
-	} else if(gameState == PlayerInput && key == OF_KEY_BACKSPACE){
+	} else if((gameState == PlayerInput || gameState == PressRecord) && key == OF_KEY_BACKSPACE){
 		newGameModeActivated = false;
 		gameState = StartUp;
-	} else if(newGameModeActivated && tolower(key) == 'r'){
-		gameState = PlayingSequence;
-		showingSequenceDuration = 0;
-		userIndex = 0;
+	} else if(newGameModeActivated){
+		if(tolower(key) == 'r'){
+			Sequence.clear();
+			sequenceLimit = 0;
+			gameState = PlayerInput;
+		}
+		if(tolower(key) == 'p'){
+			gameState = PlayingSequence;
+			showingSequenceDuration = 0;
+			userIndex = 0;
+		}
 	}
 }
 
@@ -285,8 +300,12 @@ void ofApp::mousePressed(int x, int y, int button){
 	if(gameState == StartUp){
         RedButton->setPressed(x,y);
         if(RedButton->wasPressed()){
+			lightOff(RED);
+			lightOff(BLUE);
+			lightOff(YELLOW);
+			lightOff(GREEN);
             newGameModeActivated = true;
-			gameState = PlayerInput;
+			gameState = PressRecord;
         }
     }
 

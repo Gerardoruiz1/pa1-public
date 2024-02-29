@@ -12,7 +12,7 @@ enum Buttons {
 class Button {
 public:
     
-    //Button constructor and properties
+    // Button constructor and properties
     Button(float x, float y, float width, float height, string imagePath, string soundPath);
     void render();
     void playSound();

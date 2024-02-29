@@ -10,7 +10,8 @@ class ofApp : public ofBaseApp{
 		StartUp,
 		PlayingSequence,
 		PlayerInput,
-		GameOver
+		GameOver,
+		PressRecord
 	};
 
 	public:
@@ -73,6 +74,4 @@ class ofApp : public ofBaseApp{
 		int logoCounter = 0;
 		bool idle = true;
 		bool newGameModeActivated = false;
-
-		
 };
