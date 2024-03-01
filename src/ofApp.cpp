@@ -179,6 +179,8 @@ void ofApp::draw(){
 
 	if (MultiplayerGameMode) ofDrawBitmapString("Multiplayer", 10, 50);
 	if (ComputerGameModeActivated) ofDrawBitmapString("Computer gamemode", 10, 65);
+	ofDrawBitmapString("SS: " + to_string(showingSequenceDuration), 10, 80);
+	ofDrawBitmapString("userIndex: " + to_string(userIndex), 10, 95);
 }
 //--------------------------------------------------------------
 void ofApp::GameReset(){
@@ -196,10 +198,10 @@ void ofApp::GameReset(){
 		// Record mode
 		gameState = PlayerInput;
 	}if (MultiplayerGameMode){  //if multiplayer was active it will play sequence of player one
-		generateSequenceForPlayer(1);
-		gameState = PlayingSequence;
 		//its going to add a sequence for both player in the memory
+		generateSequenceForPlayer(1);
    		generateSequenceForPlayer(2);
+		gameState = PlayingSequence;
 	}
 	else{
 		// Normal game mode
@@ -315,14 +317,14 @@ void ofApp::keyPressed(int key){
 		ComputerGameModeActivated = false;
 		MultiplayerGameMode = false;
 		GameReset();
-	} else if(gameState == PlayerInput && key == OF_KEY_BACKSPACE){
-		ComputerGameModeActivated = false;
-		MultiplayerGameMode = false;
-		gameState = StartUp;
 	} else if(ComputerGameModeActivated && tolower(key) == 'r'){
 		gameState = PlayingSequence;
 		showingSequenceDuration = 0;
 		userIndex = 0;
+	} else if(key == OF_KEY_BACKSPACE){
+		ComputerGameModeActivated = false;
+		MultiplayerGameMode = false;
+		gameState = StartUp;
 	}
 }
 
@@ -363,6 +365,7 @@ void ofApp::mousePressed(int x, int y, int button){
 			lightOff(YELLOW);
 			lightOff(GREEN);
             MultiplayerGameMode = true;
+			showingSequenceDuration = 0;
 			player1Sequence.clear();
 			player2Sequence.clear();
 			generateSequenceForPlayer(1);
@@ -413,12 +416,12 @@ void ofApp::mousePressed(int x, int y, int button){
 					gameState = PlayingSequence;
 				}
 			}
-		}else if(currentPlayer == 1){
-			if(player1Sequence[userIndex]!=color){
+		}else if(currentPlayer == 2){
+			if(player2Sequence[userIndex]!=color){
 				gameState = GameOver;
 			} else {
 				userIndex++;
-				if(userIndex >= player1Sequence.size()){
+				if(userIndex >= player2Sequence.size()){
 					generateSequenceForPlayer(2);
 					currentPlayer = 1;
 					userIndex = 0;
@@ -428,7 +431,7 @@ void ofApp::mousePressed(int x, int y, int button){
 		}
         
 		
-		userIndex++;// potentially be the highscore
+		// userIndex++;// potentially be the highscore
 	}else if(!idle && gameState == PlayerInput && ComputerGameModeActivated){
 		// New game mode!
 
