@@ -28,6 +28,8 @@ void ofApp::setup(){
 
 	//Initial State
 	gameState = StartUp;
+
+	font.load("striker-font.ttf", 25);
 }
 //--------------------------------------------------------------
 void ofApp::update(){
@@ -157,6 +159,14 @@ void ofApp::draw(){
 	else if(!idle && gameState == StartUp){
 		startUpScreen.draw(20,0,1024,768);
 	}
+
+	// This is the GameMode indicator
+	if(newGameModeActivated){
+		font.drawString("Record mode", 45, 55);
+	}else{
+		font.drawString("Normal mode", 45, 55);
+	}
+
 }
 //--------------------------------------------------------------
 void ofApp::GameReset(){
@@ -261,16 +271,20 @@ void ofApp::keyPressed(int key){
 	if((!idle || gameState == GameOver) && tolower(key) == ' '){
 		newGameModeActivated = false;
 		GameReset();
-	} else if((gameState == PlayerInput || gameState == PressRecord) && key == OF_KEY_BACKSPACE){
+	} else if((gameState == PlayerInput || gameState == PressRecord || gameState == PressRecord) && key == OF_KEY_BACKSPACE){
 		newGameModeActivated = false;
 		gameState = StartUp;
 	} else if(newGameModeActivated){
-		if(tolower(key) == 'r'){
-			Sequence.clear();
-			sequenceLimit = 0;
-			gameState = PlayerInput;
+		if(tolower(key) == 'r' && gameState != PlayingSequence){
+			if(gameState == PressRecord){
+				Sequence.clear();
+				sequenceLimit = 0;
+				gameState = PlayerInput;
+			}else{
+				gameState = PressRecord;
+			}
 		}
-		if(tolower(key) == 'p'){
+		if(tolower(key) == 'p' && gameState != PlayingSequence){
 			gameState = PlayingSequence;
 			showingSequenceDuration = 0;
 			userIndex = 0;

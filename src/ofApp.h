@@ -40,6 +40,7 @@ class ofApp : public ofBaseApp{
 		void startUpSequence(int count);
 		void newGameMode();
 	private:
+		ofTrueTypeFont font;
 		//This vector will basically act as list of button enums
 		//for us to be able to store the sequences
 		vector<Buttons> Sequence;
