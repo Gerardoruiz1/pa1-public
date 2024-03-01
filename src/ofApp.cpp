@@ -109,9 +109,9 @@ void ofApp::draw(){
 		if(showingSequenceDuration == 120){
 			if(!MultiplayerGameMode){
 				color = Sequence[userIndex];
-			}else if(currentPlayer==1){
+			}else if(currentPlayer==1 && MultiplayerGameMode){
 				color = player1Sequence[userIndex];
-			}else{
+			}else if (currentPlayer==2 && MultiplayerGameMode){
 				color = player2Sequence[userIndex];
 			}
 			lightOn(color);
@@ -221,7 +221,6 @@ void ofApp::generateSequenceForPlayer(int currentPlayer){
 	sequenceLimit1 = player1Sequence.size();
 	sequenceLimit2 = player2Sequence.size();
 }
-
 //--------------------------------------------------------------
 void ofApp::generateSequence(){
 
@@ -370,12 +369,15 @@ void ofApp::mousePressed(int x, int y, int button){
 			currentPlayer = 1;
 			userIndex = 0;
 			gameState = PlayingSequence;
+			idle = false;
+
+			
         }
     }
 
 	/* if greeen is preesed normal game mode implement*/
 
-	else if(!idle && gameState == PlayerInput && MultiplayerGameMode){//
+	if(!idle && gameState == PlayingSequence && MultiplayerGameMode){//
 		// New game mode!
 
 		//We mark the prebbssed button as "pressed"
@@ -383,7 +385,10 @@ void ofApp::mousePressed(int x, int y, int button){
 		BlueButton->setPressed(x,y);
 		YellowButton->setPressed(x,y);
 		GreenButton->setPressed(x,y);
-		
+
+		BlueButton->setIsPressed(false);
+
+		//here write that blue is unpressed
 		//We check which button got pressed
 		if(RedButton->wasPressed()){
 			color = RED;
@@ -398,11 +403,13 @@ void ofApp::mousePressed(int x, int y, int button){
 			color = GREEN;
 		}
 		//Light up the pressed button for a few ticks
-		lightOn(color);
 		lightDisplayDuration = 15;
+		//necesito que brille el sequence
+
 
 		if(currentPlayer == 1){
-			if(player1Sequence[userIndex]!=color){
+			//here i have to show the player check the multy iunput// i want to light up this 
+			if(player1Sequence[userIndex]!=color){//SWITCH LOIGC
 				gameState = GameOver;
 			} else {
 				userIndex++;
@@ -413,7 +420,7 @@ void ofApp::mousePressed(int x, int y, int button){
 					gameState = PlayingSequence;
 				}
 			}
-		}else if(currentPlayer == 1){
+		}else if(currentPlayer == 2){
 			if(player1Sequence[userIndex]!=color){
 				gameState = GameOver;
 			} else {
@@ -488,8 +495,7 @@ void ofApp::mousePressed(int x, int y, int button){
 		}else{
 			//If not, then we will terminate the game by 
 			//putting it in the GameOver state.
-			gameState = GameOver;
-		}
+			gameState = GameOver;	}
 	}
 
 }
