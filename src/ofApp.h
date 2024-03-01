@@ -70,8 +70,8 @@ class ofApp : public ofBaseApp{
 		int sequenceLimit = 1;
 		int sequenceLimit1;
 		int sequenceLimit2;
-		int userIndex = 1;
-		int showingSequenceDuration = 0;
+		int userIndex = 0;
+		int showingSequenceDuration = 560; // remove this to put the startup back
 		int lightDisplayDuration = -1;
 		Buttons color;
 		GameState gameState;
