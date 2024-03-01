@@ -40,20 +40,28 @@ void ofApp::update(){
 		YellowButton->tick();
 		GreenButton->tick();
 		
-		//If the amount of user input equals the sequence limit
-		//that means the user has successfully completed the whole
+
+		
 		//sequence and we can proceed with the next level
-		if(userIndex == sequenceLimit){
-			if(!ComputerGameModeActivated){
+		if(userIndex == sequenceLimit){ //If the amount of user input equals the sequence limit
+			if(!ComputerGameModeActivated && !MultiplayerGameMode){ // if random mode is false generate sequence,
 				generateSequence();
 			}
+
+			/*
+			aqui voy a poner la logica de que genere both sequences para multipplayer.
+			*/
+
+
+			//sequence and we can proceed with the next level
 			userIndex = 0;
-			showingSequenceDuration = 0;
+			showingSequenceDuration = 0; 
 			gameState = PlayingSequence;
+			//sequence and we can proceed with the next level
 		}
 	}
 
-    }
+    
 
 	//This will take care of turning on the lights after a few
 	//ticks so that they dont stay turned on forever or too long
@@ -167,13 +175,14 @@ void ofApp::GameReset(){
 	player1Sequence.clear();
     player2Sequence.clear();
 	currentPlayer = 1;
-	if(ComputerGameModeActivated){
+	if(ComputerGameModeActivated){ //if computer mode was already activated it will ask for input
 		// Record mode
 		gameState = PlayerInput;
-	}if (MultiplayerGameMode){
+	}if (MultiplayerGameMode){  //if multiplayer was acgive it will play sequence of player one
 		generateSequenceForPlayer(1);
-   		generateSequenceForPlayer(2);
 		gameState = PlayingSequence;
+		//its going to add a sequence for both player in the memory
+   		generateSequenceForPlayer(2);
 	}
 	else{
 		// Normal game mode
@@ -191,6 +200,9 @@ void ofApp::generateSequenceForPlayer(int currentPlayer){
     } else {
         player2Sequence.push_back(newButton);
     }
+
+	sequenceLimit1 = player1Sequence.size();
+	sequenceLimit2 = player2Sequence.size();
 }
 
 //--------------------------------------------------------------
@@ -331,7 +343,10 @@ void ofApp::mousePressed(int x, int y, int button){
 			gameState = PlayingSequence;
         }
     }
-		if(!idle && gameState == PlayerInput && MultiplayerGameMode){
+
+	/* if greeen is preesed normal game mode implement*/
+
+		if(!idle && gameState == PlayingSequence && MultiplayerGameMode){//
 		// New game mode!
 
 		//We mark the prebbssed button as "pressed"
@@ -356,37 +371,30 @@ void ofApp::mousePressed(int x, int y, int button){
 		//Light up the pressed button for a few ticks
 		lightOn(color);
 		lightDisplayDuration = 15;
-		if(gameState == PlayingSequence){
-        if(currentPlayer == 1 && userIndex >= player1Sequence.size()){
-            currentPlayer = 2;
+
+        if(currentPlayer == 1 && userIndex >= player1Sequence.size()){// pq quiero check if userIndex >palayersequence size to check if undi uno
+             if(!checkMultyInput(color)){ // entiendo que aqui esta el problema
+                gameState = GameOver;
+            }
+			currentPlayer = 2;
             userIndex = 0;
-        } else if(currentPlayer == 2 && userIndex >= player2Sequence.size()){
-            currentPlayer = 1;
+			gameState = PlayingSequence;
+
+        } 
+		else if(currentPlayer == 2 && userIndex >= player2Sequence.size()){
+             if(!checkMultyInput(color)){ // entiendo que aqui esta el problema
+                gameState = GameOver;
+            }
+			currentPlayer = 1;
             generateSequenceForPlayer(1);
             generateSequenceForPlayer(2);
             userIndex = 0;
-        }
-		if(currentPlayer == 1){
-            if(!checkMultyInput(color)){ // entiendo que aqui esta el problema
-                gameState = GameOver;
-            }
-        } else {
-            if(!checkMultyInput(color)){
-                gameState = GameOver;
-            }
+			gameState = PlayingSequence;
         }
 		
-		 userIndex++;
-        if(currentPlayer == 1 && userIndex >= player1Sequence.size()){
-            currentPlayer = 2;
-            userIndex = 0;
-        } else if(currentPlayer == 2 && userIndex >= player2Sequence.size()){
-            currentPlayer = 1;
-            userIndex = 0;
-            gameState = PlayingSequence; // Start next round
-        }
+		 userIndex++;// potentially be the highscore
 		
-	}
+
 
 
 	if(!idle && gameState == PlayerInput && ComputerGameModeActivated){

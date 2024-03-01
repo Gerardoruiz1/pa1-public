@@ -7,9 +7,9 @@ class ofApp : public ofBaseApp{
 
 	//enums to represent game states
 	enum GameState{
-		StartUp,
-		PlayingSequence,
-		PlayerInput,
+		StartUp,//al principio que se pueden escoger los modes
+		PlayingSequence,// cuando esta la maquina playing
+		PlayerInput,// coge input en el juego
 		GameOver
 	};
 
@@ -44,6 +44,8 @@ class ofApp : public ofBaseApp{
 		//This vector will basically act as list of button enums
 		//for us to be able to store the sequences
 		vector<Buttons> Sequence;
+		std::vector<Buttons> player1Sequence;
+		std::vector<Buttons> player2Sequence;
 
 		//Let's declare the buttons we will use
 		Button *RedButton;
@@ -66,6 +68,8 @@ class ofApp : public ofBaseApp{
 		//Few variables we'll need
         ofSoundPlayer backgroundMusic;
 		int sequenceLimit = 1;
+		int sequenceLimit1;
+		int sequenceLimit2;
 		int userIndex = 1;
 		int showingSequenceDuration = 0;
 		int lightDisplayDuration = -1;
@@ -77,8 +81,7 @@ class ofApp : public ofBaseApp{
 
 		bool ComputerGameModeActivated = false;
 		bool MultiplayerGameMode = false;
-		std::vector<Buttons> player1Sequence;
-		std::vector<Buttons> player2Sequence;
+		
 		int currentPlayer = 1;
 
 		
