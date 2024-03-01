@@ -221,6 +221,7 @@ void ofApp::generateSequenceForPlayer(int currentPlayer){
 	sequenceLimit1 = player1Sequence.size();
 	sequenceLimit2 = player2Sequence.size();
 }
+
 //--------------------------------------------------------------
 void ofApp::generateSequence(){
 
@@ -409,9 +410,6 @@ void ofApp::mousePressed(int x, int y, int button){
 
 		if(currentPlayer == 1){
 			//here i have to show the player check the multy iunput// i want to light up this 
-			if(player1Sequence[userIndex]!=color){//SWITCH LOIGC
-				gameState = GameOver;
-			} else {
 				userIndex++;
 				if(userIndex >= player1Sequence.size()){
 					generateSequenceForPlayer(1);
@@ -420,12 +418,10 @@ void ofApp::mousePressed(int x, int y, int button){
 					gameState = PlayingSequence;
 				}
 			}
-		}else if(currentPlayer == 2){
-			if(player1Sequence[userIndex]!=color){
-				gameState = GameOver;
+		else if(currentPlayer == 2){
 			} else {
 				userIndex++;
-				if(userIndex >= player1Sequence.size()){
+				if(userIndex >= player2Sequence.size()){
 					generateSequenceForPlayer(2);
 					currentPlayer = 1;
 					userIndex = 0;
@@ -433,10 +429,11 @@ void ofApp::mousePressed(int x, int y, int button){
 				}
 			}
 		}
-        
+		userIndex++;
+        }
 		
-		userIndex++;// potentially be the highscore
-	}else if(!idle && gameState == PlayerInput && ComputerGameModeActivated){
+		
+		else if(!idle && gameState == PlayerInput && ComputerGameModeActivated){
 		// New game mode!
 
 		//We mark the prebbssed button as "pressed"
@@ -498,7 +495,6 @@ void ofApp::mousePressed(int x, int y, int button){
 			gameState = GameOver;	}
 	}
 
-}
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
 
