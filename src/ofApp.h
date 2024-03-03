@@ -71,6 +71,7 @@ class ofApp : public ofBaseApp{
 		int sequenceLimit1;
 		int sequenceLimit2;
 		int userIndex = 0;
+
 		int showingSequenceDuration = 560; // remove this to put the startup back
 		int lightDisplayDuration = -1;
 		Buttons color;
@@ -81,8 +82,14 @@ class ofApp : public ofBaseApp{
 
 		bool ComputerGameModeActivated = false;
 		bool MultiplayerGameMode = false;
-		
+		int p1_points =0;
+		int p2_points =0;
 		int currentPlayer = 1;
+		string win = "";
+		string loose = "";
+		int curentScore1;
+		int curentScore2;
+		int highestScore = 0;
 
 		
 };

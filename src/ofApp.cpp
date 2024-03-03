@@ -74,6 +74,24 @@ void ofApp::update(){
 			lightOff(GREEN);
 		}
 	}
+
+		if (MultiplayerGameMode && gameState == PlayerInput) {		
+		// Check if it's Player 1's turn
+		if (currentPlayer == 1) {
+			currentPlayer = 2;
+		} else {
+			currentPlayer = 1;
+		}
+
+			// Generate a new sequence for Player 2
+			generateSequenceForPlayer(2);
+			// Set game state to PlayingSequence for Player 2's turn
+			userIndex = 0;
+			showingSequenceDuration = 0;
+			gameState = PlayingSequence;
+	}
+
+
 }
 
 //--------------------------------------------------------------
@@ -158,11 +176,25 @@ void ofApp::draw(){
 	if(logoIsReady){
 		logo.draw(ofGetWindowWidth()/2-160,ofGetWindowHeight()/2-150,330,330);
 	}
-
+	// highscore logic
 	//Draw the game over screen
 	if(gameState == GameOver){
 		gameOverScreen.draw(0,0,1024,768);
-	}
+		curentScore1 = sequenceLimit1 - 1;
+		curentScore2 = sequenceLimit1 - 2;
+		if (MultiplayerGameMode && win == "player 1"){
+			curentScore1 = curentScore1 + 1;
+		}
+		else if (MultiplayerGameMode && win == "player 2"){
+			curentScore2 = curentScore2 + 1;
+		}
+		if (curentScore1 > highestScore){
+			highestScore = curentScore1;
+		}
+		if (curentScore2 > highestScore){
+			highestScore = curentScore2;
+		}
+
 
 	//This will draw the "Press to Start" screen at the beginning
 	else if(!idle && gameState == StartUp){
@@ -181,6 +213,7 @@ void ofApp::draw(){
 	if (ComputerGameModeActivated) ofDrawBitmapString("Computer gamemode", 10, 65);
 	ofDrawBitmapString("SS: " + to_string(showingSequenceDuration), 10, 80);
 	ofDrawBitmapString("userIndex: " + to_string(userIndex), 10, 95);
+}
 }
 //--------------------------------------------------------------
 void ofApp::GameReset(){
@@ -260,11 +293,20 @@ bool ofApp::checkUserInput(Buttons input){
 }
 
 bool ofApp::checkMultyInput(Buttons input){
-	if ((player1Sequence[userIndex] == input)||(player2Sequence[userIndex] == input)){
+	if (player1Sequence[userIndex] == input){
+		p1_points++;
+		return true;
+	}
+	if (player2Sequence[userIndex] == input){
+		p2_points++;
 		return true;
 	}else{
 		return false;
 	}
+
+
+		
+
 	//This function will varify if the user input matches the color
 	//of the sequence at the current index
 }
@@ -379,7 +421,6 @@ void ofApp::mousePressed(int x, int y, int button){
         }
     }
 
-	/* if greeen is preesed normal game mode implement*/
 
 	if(!idle && gameState == PlayingSequence && MultiplayerGameMode){//
 		// New game mode!
@@ -406,41 +447,49 @@ void ofApp::mousePressed(int x, int y, int button){
 		else if(GreenButton->wasPressed()){
 			color = GREEN;
 		}
-		//Light up the pressed button for a few ticks
+		lightOn(color);
+		//Light up the pressed button for a curee ticks
 		lightDisplayDuration = 15;
 		//necesito que brille el sequence
-
-
+		gameState = PlayerInput;
 		if(currentPlayer == 1){
-			//here i have to show the player check the multy iunput// i want to light up this 
+			if(checkMultyInput(color)){
 				userIndex++;
-				if(userIndex >= player1Sequence.size()){
-					generateSequenceForPlayer(1);
-					currentPlayer = 2;
+				if(userIndex == sequenceLimit1){
 					userIndex = 0;
 					gameState = PlayingSequence;
+					currentPlayer++;
 				}
-			}
-		}else if(currentPlayer == 2){
-			if(player2Sequence[userIndex]!=color){
+			}else{
+				loose = "player 1";
+				win = "player 2";
 				gameState = GameOver;
-			} else {
+			}
+			}
+		if (currentPlayer ==2){
+			if(checkMultyInput(color)){
 				userIndex++;
-				if(userIndex >= player2Sequence.size()){
-				if(userIndex >= player2Sequence.size()){
-					generateSequenceForPlayer(2);
-					currentPlayer = 1;
+					if(userIndex == sequenceLimit2){
+					currentPlayer--;
 					userIndex = 0;
 					gameState = PlayingSequence;
-				}
 			}
-		}
-		userIndex++;
+			else{
+				loose = "player 2";
+				win = "player 1";
+				gameState = GameOver;
+			}
+			//here i have to show the player check the multy iunput// i want to light up this 
+			
+
+			}
         }
+		if(!idle && gameState == PlayerInput && MultiplayerGameMode){
+			
+		}
+
 		
-		
-		// userIndex++;// potentially be the highscore
-	}else if(!idle && gameState == PlayerInput && ComputerGameModeActivated){
+		else if(!idle && gameState == PlayerInput && ComputerGameModeActivated){
 		// New game mode!
 
 		//We mark the prebbssed button as "pressed"
@@ -467,7 +516,8 @@ void ofApp::mousePressed(int x, int y, int button){
 		lightDisplayDuration = 15;
 		Sequence.push_back(color);
 		sequenceLimit = Sequence.size();
-	}else if(!idle && gameState == PlayerInput && !ComputerGameModeActivated && !MultiplayerGameMode){
+	}
+	else if(!idle && gameState == PlayerInput && !ComputerGameModeActivated && !MultiplayerGameMode){
 		// Normal game mode
 
 		//We mark the pressed button as "pressed"
@@ -501,7 +551,8 @@ void ofApp::mousePressed(int x, int y, int button){
 			//putting it in the GameOver state.
 			gameState = GameOver;	}
 	}
-
+}
+}
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
 
