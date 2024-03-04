@@ -43,7 +43,7 @@ void ofApp::update(){
 
 		
 		//sequence and we can proceed with the next level
-		if(userIndex == sequenceLimit){ //If the amount of user input equals the sequence limit
+		if(userIndex == sequenceLimit && !MultiplayerGameMode){ //If the amount of user input equals the sequence limit
 			if(!ComputerGameModeActivated && !MultiplayerGameMode){ // if random mode is false generate sequence,
 				generateSequence();
 			}
@@ -75,22 +75,21 @@ void ofApp::update(){
 		}
 	}
 
-		if (MultiplayerGameMode && gameState == PlayerInput) {		
-		// Check if it's Player 1's turn
-		if (currentPlayer == 1) {
-			currentPlayer = 2;
-		} else {
-			currentPlayer = 1;
-		}
+	// if (MultiplayerGameMode && gameState == PlayerInput) {		
+	// 	// Check if it's Player 1's turn
+	// 	if (currentPlayer == 1) {
+	// 		currentPlayer = 2;
+	// 	} else {
+	// 		currentPlayer = 1;
+	// 	}
 
-			// Generate a new sequence for Player 2
-			generateSequenceForPlayer(2);
-			// Set game state to PlayingSequence for Player 2's turn
-			userIndex = 0;
-			showingSequenceDuration = 0;
-			gameState = PlayingSequence;
-	}
-
+	// 	// Generate a new sequence for Player 2
+	// 	generateSequenceForPlayer(2);
+	// 	// Set game state to PlayingSequence for Player 2's turn
+	// 	userIndex = 0;
+	// 	showingSequenceDuration = 0;
+	// 	gameState = PlayingSequence;
+	// }
 
 }
 
@@ -141,7 +140,15 @@ void ofApp::draw(){
 			showingSequenceDuration = 60;
 			userIndex++;
 		}
-		if(userIndex == sequenceLimit){
+		int limit =1;
+		if(!MultiplayerGameMode){
+			limit = sequenceLimit;
+		}else if(currentPlayer==1){
+			limit = player1Sequence.size();
+		}else if (currentPlayer==2){
+			limit = player2Sequence.size();
+		}
+		if(userIndex == limit){
 			lightOff(color);
 			userIndex = 0;
 			gameState = PlayerInput;
@@ -159,6 +166,7 @@ void ofApp::draw(){
 
 	//If the statements to see see if the buttons should be lit up
 	//If they are then we will draw the glowing images on top of them
+	ofSetColor(255, 255, 255, 100);
 	if (RedButton->GetIsLightUp()) {
 		redLight.draw(ofGetWindowWidth()/2-60, ofGetWindowHeight()/2-305, 376, 329);
 	}
@@ -171,6 +179,7 @@ void ofApp::draw(){
 	if (GreenButton->GetIsLightUp()) {
 		greenLight.draw(ofGetWindowWidth()/2-307, ofGetWindowHeight()/2-295, 315, 356);
 	}
+	ofSetColor(255);
 
 	//Part of the Start Up
 	if(logoIsReady){
@@ -180,8 +189,8 @@ void ofApp::draw(){
 	//Draw the game over screen
 	if(gameState == GameOver){
 		gameOverScreen.draw(0,0,1024,768);
-		curentScore1 = sequenceLimit1 - 1;
-		curentScore2 = sequenceLimit1 - 2;
+		curentScore1 = player1Sequence.size() - 1;
+		curentScore2 = player2Sequence.size() - 1;
 		if (MultiplayerGameMode && win == "player 1"){
 			curentScore1 = curentScore1 + 1;
 		}
@@ -194,7 +203,7 @@ void ofApp::draw(){
 		if (curentScore2 > highestScore){
 			highestScore = curentScore2;
 		}
-
+	}
 
 	//This will draw the "Press to Start" screen at the beginning
 	else if(!idle && gameState == StartUp){
@@ -204,6 +213,7 @@ void ofApp::draw(){
 	//Debug
 	ofDrawBitmapString("Player: " + to_string(currentPlayer), 10, 20);
 	
+	auto gs = gameState;
 	if (gameState==StartUp) ofDrawBitmapString("State: StartUp", 10, 35);
 	if (gameState==PlayingSequence) ofDrawBitmapString("State: PlayingSequence", 10, 35);
 	if (gameState==PlayerInput) ofDrawBitmapString("State: PlayerInput", 10, 35);
@@ -214,7 +224,7 @@ void ofApp::draw(){
 	ofDrawBitmapString("SS: " + to_string(showingSequenceDuration), 10, 80);
 	ofDrawBitmapString("userIndex: " + to_string(userIndex), 10, 95);
 }
-}
+
 //--------------------------------------------------------------
 void ofApp::GameReset(){
 	//This function will reset the game to its initial state
@@ -226,14 +236,17 @@ void ofApp::GameReset(){
 	Sequence.clear();
 	player1Sequence.clear();
     player2Sequence.clear();
+	p1_points = 0;
+	p2_points = 0;
 	currentPlayer = 1;
 	if(ComputerGameModeActivated){ //if computer mode was already activated it will ask for input
 		// Record mode
 		gameState = PlayerInput;
-	}if (MultiplayerGameMode){  //if multiplayer was active it will play sequence of player one
+	}
+	else if (MultiplayerGameMode){
+		//if multiplayer was active it will play sequence of player one
 		//its going to add a sequence for both player in the memory
 		generateSequenceForPlayer(1);
-   		generateSequenceForPlayer(2);
 		gameState = PlayingSequence;
 	}
 	else{
@@ -252,9 +265,6 @@ void ofApp::generateSequenceForPlayer(int currentPlayer){
     } else {
         player2Sequence.push_back(newButton);
     }
-
-	sequenceLimit1 = player1Sequence.size();
-	sequenceLimit2 = player2Sequence.size();
 }
 
 //--------------------------------------------------------------
@@ -293,19 +303,23 @@ bool ofApp::checkUserInput(Buttons input){
 }
 
 bool ofApp::checkMultyInput(Buttons input){
-	if (player1Sequence[userIndex] == input){
-		p1_points++;
-		return true;
-	}
-	if (player2Sequence[userIndex] == input){
-		p2_points++;
-		return true;
-	}else{
-		return false;
+	if (currentPlayer == 1) {
+		if (player1Sequence[userIndex] == input) {
+			p1_points++;
+			return true;
+		} else {
+			return false;
+		}
+	} else {
+		if (player2Sequence[userIndex] == input) {
+			p2_points++;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
-
-		
+	return false;	
 
 	//This function will varify if the user input matches the color
 	//of the sequence at the current index
@@ -406,23 +420,23 @@ void ofApp::mousePressed(int x, int y, int button){
 			lightOff(BLUE);
 			lightOff(YELLOW);
 			lightOff(GREEN);
+			BlueButton->setIsPressed(false);
             MultiplayerGameMode = true;
 			showingSequenceDuration = 0;
 			player1Sequence.clear();
 			player2Sequence.clear();
 			generateSequenceForPlayer(1);
-			generateSequenceForPlayer(2);
+			p1_points = 0;
+			p2_points = 0;
 			currentPlayer = 1;
 			userIndex = 0;
 			gameState = PlayingSequence;
 			idle = false;
-
-			
         }
     }
 
 
-	if(!idle && gameState == PlayingSequence && MultiplayerGameMode){//
+	else if(!idle && gameState == PlayerInput && MultiplayerGameMode){//
 		// New game mode!
 
 		//We mark the prebbssed button as "pressed"
@@ -430,8 +444,6 @@ void ofApp::mousePressed(int x, int y, int button){
 		BlueButton->setPressed(x,y);
 		YellowButton->setPressed(x,y);
 		GreenButton->setPressed(x,y);
-
-		BlueButton->setIsPressed(false);
 
 		//here write that blue is unpressed
 		//We check which button got pressed
@@ -455,41 +467,38 @@ void ofApp::mousePressed(int x, int y, int button){
 		if(currentPlayer == 1){
 			if(checkMultyInput(color)){
 				userIndex++;
-				if(userIndex == sequenceLimit1){
-					userIndex = 0;
-					gameState = PlayingSequence;
+				if(userIndex == player1Sequence.size()){
 					currentPlayer++;
+					generateSequenceForPlayer(currentPlayer);
+					userIndex = 0;
+					showingSequenceDuration = 0;
+					gameState = PlayingSequence;
 				}
 			}else{
 				loose = "player 1";
 				win = "player 2";
 				gameState = GameOver;
 			}
-			}
-		if (currentPlayer ==2){
+		}else if (currentPlayer ==2){
 			if(checkMultyInput(color)){
 				userIndex++;
-					if(userIndex == sequenceLimit2){
+				if(userIndex == player2Sequence.size()){
 					currentPlayer--;
+					generateSequenceForPlayer(currentPlayer);
 					userIndex = 0;
+					showingSequenceDuration = 0;
 					gameState = PlayingSequence;
-			}
-			else{
+				}
+
+			}else{
 				loose = "player 2";
 				win = "player 1";
 				gameState = GameOver;
 			}
-			//here i have to show the player check the multy iunput// i want to light up this 
-			
-
-			}
-        }
-		if(!idle && gameState == PlayerInput && MultiplayerGameMode){
-			
 		}
-
+	}
 		
-		else if(!idle && gameState == PlayerInput && ComputerGameModeActivated){
+	else if(!idle && gameState == PlayerInput && ComputerGameModeActivated){
 		// New game mode!
 
 		//We mark the prebbssed button as "pressed"
@@ -551,7 +560,6 @@ void ofApp::mousePressed(int x, int y, int button){
 			//putting it in the GameOver state.
 			gameState = GameOver;	}
 	}
-}
 }
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){

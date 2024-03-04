@@ -68,8 +68,6 @@ class ofApp : public ofBaseApp{
 		//Few variables we'll need
         ofSoundPlayer backgroundMusic;
 		int sequenceLimit = 1;
-		int sequenceLimit1;
-		int sequenceLimit2;
 		int userIndex = 0;
 
 		int showingSequenceDuration = 560; // remove this to put the startup back
@@ -91,5 +89,4 @@ class ofApp : public ofBaseApp{
 		int curentScore2;
 		int highestScore = 0;
 
-		
 };
