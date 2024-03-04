@@ -24,6 +24,9 @@ public:
     void toggleLightOff(){isLightUp = false;}
     bool GetIsLightUp(){return isLightUp;}
     void tick();
+    void setIsPressed(bool newValue) {
+        isPressed = newValue;
+    }
 
 private:
     float x, y, width, height;

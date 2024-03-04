@@ -35,7 +35,9 @@ class ofApp : public ofBaseApp{
 		void lightOn(Buttons color);
 		void lightOff(Buttons color);
 		void generateSequence();
+		void generateSequenceForPlayer(int player);
 		bool checkUserInput(Buttons c);
+		bool checkMultyInput(Buttons input);
 		void GameReset();
 		void startUpSequence(int count);
 		void newGameMode();
@@ -44,6 +46,8 @@ class ofApp : public ofBaseApp{
 		//This vector will basically act as list of button enums
 		//for us to be able to store the sequences
 		vector<Buttons> Sequence;
+		std::vector<Buttons> player1Sequence;
+		std::vector<Buttons> player2Sequence;
 
 		//Let's declare the buttons we will use
 		Button *RedButton;
@@ -66,13 +70,25 @@ class ofApp : public ofBaseApp{
 		//Few variables we'll need
         ofSoundPlayer backgroundMusic;
 		int sequenceLimit = 1;
-		int userIndex = 1;
-		int showingSequenceDuration = 0;
+		int userIndex = 0;
+
+		int showingSequenceDuration = 560; // remove this to put the startup back
 		int lightDisplayDuration = -1;
 		Buttons color;
 		GameState gameState;
 		bool logoIsReady = false;
 		int logoCounter = 0;
 		bool idle = true;
-		bool newGameModeActivated = false;
+
+		bool ComputerGameModeActivated = false;
+		bool MultiplayerGameMode = false;
+		int p1_points =0;
+		int p2_points =0;
+		int currentPlayer = 1;
+		string win = "";
+		string loose = "";
+		int curentScore1;
+		int curentScore2;
+		int highestScore = 0;
+
 };
