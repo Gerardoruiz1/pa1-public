@@ -153,7 +153,7 @@ void ofApp::draw(){
 		if(userIndex == limit){
 			lightOff(color);
 			userIndex = 0;
-			if(newGameModeActivated){
+			if(ComputerGameModeActivated){
 				gameState = PressRecord;
 				Sequence.clear();
 			} else {
@@ -383,9 +383,9 @@ void ofApp::keyPressed(int key){
 		MultiplayerGameMode = false;
 		GameReset();
 	} else if((gameState == PlayerInput || gameState == PressRecord || gameState == PressRecord) && key == OF_KEY_BACKSPACE){
-		newGameModeActivated = false;
+		ComputerGameModeActivated = false;
 		gameState = StartUp;
-	} else if(newGameModeActivated){
+	} else if(ComputerGameModeActivated){
 		if(tolower(key) == 'r' && gameState != PlayingSequence){
 			if(gameState == PressRecord){
 				Sequence.clear();
@@ -434,7 +434,7 @@ void ofApp::mousePressed(int x, int y, int button){
 			lightOff(BLUE);
 			lightOff(YELLOW);
 			lightOff(GREEN);
-            newGameModeActivated = true;
+            ComputerGameModeActivated = true;
 			gameState = PressRecord;
         }
 		
