@@ -33,17 +33,15 @@ void ofApp::setup(){
 }
 //--------------------------------------------------------------
 void ofApp::update(){
+	RedButton->tick();
+	BlueButton->tick();
+	YellowButton->tick();
+	GreenButton->tick();
 
 	//We will tick the buttons, aka constantly update them
 	//while expecting input from the user to see if anything changed
-	if(gameState == PlayerInput){
-		RedButton->tick();
-		BlueButton->tick();
-		YellowButton->tick();
-		GreenButton->tick();
-		
+	if(gameState == PlayerInput && !ComputerGameModeActivated){
 
-		
 		//sequence and we can proceed with the next level
 		if(userIndex == sequenceLimit && !MultiplayerGameMode){ //If the amount of user input equals the sequence limit
 			if(!ComputerGameModeActivated && !MultiplayerGameMode){ // if random mode is false generate sequence,
@@ -109,7 +107,7 @@ void ofApp::draw(){
 
 	if(ComputerGameModeActivated){
 		ofSetColor(255);
-		ofDrawCircle(100, 100, 33);
+		ofDrawCircle(100, 150, 33);
 		if(gameState == PlayerInput){
 			ofSetColor(255, 100, 100);
 		}else if(gameState == PlayingSequence){
@@ -117,7 +115,7 @@ void ofApp::draw(){
 		}else{
 			ofSetColor(255);
 		}
-		ofDrawCircle(100, 100, 30);
+		ofDrawCircle(100, 150, 30);
 		ofSetColor(255);
 	}
 	
@@ -217,19 +215,23 @@ void ofApp::draw(){
 		startUpScreen.draw(20,0,1024,768);
 	}
 
-	//Debug
-	ofDrawBitmapString("Player: " + to_string(currentPlayer), 10, 20);
-	
-	auto gs = gameState;
-	if (gameState==StartUp) ofDrawBitmapString("State: StartUp", 10, 35);
-	if (gameState==PlayingSequence) ofDrawBitmapString("State: PlayingSequence", 10, 35);
-	if (gameState==PlayerInput) ofDrawBitmapString("State: PlayerInput", 10, 35);
-	if (gameState==GameOver) ofDrawBitmapString("State: GameOver", 10, 35);
+	if (MultiplayerGameMode) {
+		ofDrawBitmapString("Multiplayer", 10, 20);
+		ofDrawBitmapString("Player: " + to_string(currentPlayer), 10, 35);
+	}
+	if (ComputerGameModeActivated) ofDrawBitmapString("Computer gamemode", 10, 20);
 
-	if (MultiplayerGameMode) ofDrawBitmapString("Multiplayer", 10, 50);
-	if (ComputerGameModeActivated) ofDrawBitmapString("Computer gamemode", 10, 65);
-	ofDrawBitmapString("SS: " + to_string(showingSequenceDuration), 10, 80);
-	ofDrawBitmapString("userIndex: " + to_string(userIndex), 10, 95);
+	if(gameState == StartUp){
+		int x = 600;
+		int y = 230;
+		ofDrawBitmapString("Human", x, y);
+		ofDrawBitmapString("VS", x, y + 10);
+		ofDrawBitmapString("Computer", x, y + 20);
+		
+		x = 600;
+		y = 530;
+		ofDrawBitmapString("Multiplayer", x, y);
+	}
 }
 
 //--------------------------------------------------------------
@@ -384,6 +386,7 @@ void ofApp::keyPressed(int key){
 		GameReset();
 	} else if((gameState == PlayerInput || gameState == PressRecord || gameState == PressRecord) && key == OF_KEY_BACKSPACE){
 		ComputerGameModeActivated = false;
+		MultiplayerGameMode = false;
 		gameState = StartUp;
 	} else if(ComputerGameModeActivated){
 		if(tolower(key) == 'r' && gameState != PlayingSequence){
